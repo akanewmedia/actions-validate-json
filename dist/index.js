@@ -54,20 +54,24 @@ function run() {
         try {
             core.setCommandEcho(true);
             core.setOutput('Initializing', true);
+            core.info('Initializing');
             const workspace = (_a = process.env.GITHUB_WORKSPACE) !== null && _a !== void 0 ? _a : './';
             const readFile = util_1.default.promisify(fs_1.default.readFile);
             walk(workspace, (err, results) => __awaiter(this, void 0, void 0, function* () {
                 if (err !== null) {
+                    core.warning(err);
                     core.setFailed(err);
                 }
                 core.setOutput('results', results);
+                core.info(`results ${results}`);
                 if (!(0, lodash_1.isNil)(results) && !(0, lodash_1.isNil)(err) && results.length > 0) {
                     for (const file of results) {
                         const contents = yield readFile(file);
                         core.setOutput('contents', contents);
+                        core.info(`contents ${contents}`);
                     }
                 }
-            }), (f) => /.json$/.test(f));
+            }));
         }
         catch (error) {
             core.setFailed(error);

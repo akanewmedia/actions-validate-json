@@ -8,24 +8,24 @@ async function run(): Promise<void> {
   try {
     core.setCommandEcho(true)
     core.setOutput('Initializing', true)
+    core.info('Initializing')
     const workspace = process.env.GITHUB_WORKSPACE ?? './'
     const readFile = util.promisify(fs.readFile)
-    walk(
-      workspace,
-      async (err: Error | null, results?: string[]) => {
-        if (err !== null) {
-          core.setFailed(err)
+    walk(workspace, async (err: Error | null, results?: string[]) => {
+      if (err !== null) {
+        core.warning(err)
+        core.setFailed(err)
+      }
+      core.setOutput('results', results)
+      core.info(`results ${results}`)
+      if (!isNil(results) && !isNil(err) && results.length > 0) {
+        for (const file of results) {
+          const contents = await readFile(file)
+          core.setOutput('contents', contents)
+          core.info(`contents ${contents}`)
         }
-        core.setOutput('results', results)
-        if (!isNil(results) && !isNil(err) && results.length > 0) {
-          for (const file of results) {
-            const contents = await readFile(file)
-            core.setOutput('contents', contents)
-          }
-        }
-      },
-      (f: string) => /.json$/.test(f)
-    )
+      }
+    })
   } catch (error: any) {
     core.setFailed(error)
   }
