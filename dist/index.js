@@ -51,8 +51,14 @@ const lodash_1 = __nccwpck_require__(250);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            core.setCommandEcho(true);
+            core.setOutput('Initializing', true);
             const readFile = util_1.default.promisify(fs_1.default.readFile);
             walk('.', (err, results) => __awaiter(this, void 0, void 0, function* () {
+                if (err !== null) {
+                    core.setFailed(err);
+                }
+                core.setOutput('results', results);
                 if (!(0, lodash_1.isNil)(results) && !(0, lodash_1.isNil)(err) && results.length > 0) {
                     for (const file of results) {
                         const contents = yield readFile(file);

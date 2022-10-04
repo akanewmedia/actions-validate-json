@@ -6,10 +6,16 @@ import {isNil} from 'lodash'
 
 async function run(): Promise<void> {
   try {
+    core.setCommandEcho(true)
+    core.setOutput('Initializing', true)
     const readFile = util.promisify(fs.readFile)
     walk(
       '.',
       async (err: Error | null, results?: string[]) => {
+        if (err !== null) {
+          core.setFailed(err)
+        }
+        core.setOutput('results', results)
         if (!isNil(results) && !isNil(err) && results.length > 0) {
           for (const file of results) {
             const contents = await readFile(file)
