@@ -55,10 +55,10 @@ function run() {
             const workspace = (_a = process.env.GITHUB_WORKSPACE) !== null && _a !== void 0 ? _a : './';
             core.info(`workspace dir: ${workspace}`);
             const files = (0, fs_walk_1.default)(workspace);
-            const jsonRegex = /(.+) \.(json)/;
+            const jsonRegex = /(.+)\/(apps|libs)\/(.+)\.(json)/;
             const jsonFiles = (0, lodash_1.filter)(files, o => jsonRegex.test(o));
             core.setOutput('jsonFiles', jsonFiles);
-            core.info(`files ${files}`);
+            core.info(`jsonFiles ${jsonFiles}`);
         }
         catch (error) {
             core.setFailed(error);
