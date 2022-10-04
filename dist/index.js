@@ -56,7 +56,7 @@ function run() {
             core.info(`workspace dir: ${workspace}`);
             const files = (0, fs_walk_1.default)(workspace);
             const jsonRegex = /(.+)\/(apps|libs)\/(.+)\.(json)/;
-            const jsonFiles = (0, lodash_1.filter)(files, o => jsonRegex.test(o));
+            const jsonFiles = (0, lodash_1.filter)(files, o => jsonRegex.test(o) && !(0, lodash_1.includes)(o, 'e2e') && !(0, lodash_1.includes)(o, 'tsconfig'));
             core.setOutput('jsonFiles', jsonFiles);
             core.info(`jsonFiles ${jsonFiles}`);
         }

@@ -1,6 +1,6 @@
 import * as core from '@actions/core'
 import walk from '@chronocide/fs-walk'
-import { filter } from 'lodash'
+import { filter, includes } from 'lodash'
 
 async function run(): Promise<void> {
   try {
@@ -12,7 +12,10 @@ async function run(): Promise<void> {
 
     const files = walk(workspace)
     const jsonRegex = /(.+)\/(apps|libs)\/(.+)\.(json)/
-    const jsonFiles = filter(files, o => jsonRegex.test(o))
+    const jsonFiles = filter(
+      files,
+      o => jsonRegex.test(o) && !includes(o, 'e2e') && !includes(o, 'tsconfig')
+    )
 
     core.setOutput('jsonFiles', jsonFiles)
     core.info(`jsonFiles ${jsonFiles}`)
