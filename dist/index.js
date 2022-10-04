@@ -56,6 +56,7 @@ function run() {
             const workspace = (_a = process.env.GITHUB_WORKSPACE) !== null && _a !== void 0 ? _a : './';
             core.info(`workspace dir: ${workspace}`);
             const files = (0, fs_walk_1.default)(workspace);
+            // Filters out all files that are not json files and not data files
             const jsonRegex = /(.+)\/(apps|libs)\/(.+)\.(json)/;
             const jsonFiles = (0, lodash_1.filter)(files, o => jsonRegex.test(o) &&
                 !(0, lodash_1.includes)(o, 'e2e') &&
@@ -63,21 +64,20 @@ function run() {
                 !(0, lodash_1.includes)(o, 'ng-package') &&
                 !(0, lodash_1.includes)(o, 'lint') &&
                 !(0, lodash_1.includes)(o, 'package-lock'));
+            // Go through the json files and JSON.parse each file to make sure thet are valid
             (0, lodash_1.map)(jsonFiles, fileName => {
                 fs.readFile(fileName, 'utf8', (err, data) => {
                     try {
-                        const fileData = JSON.parse(data);
-                        core.info(`fileData dir: ${JSON.stringify(fileData)}`);
+                        JSON.parse(data);
                     }
                     catch (e) {
+                        // if error print file name a set step to failed
                         const result = e.message;
                         core.error(`File ${fileName} is invalid: ${result}`);
                         core.setFailed(`File ${fileName} is invalid: ${result}`);
                     }
                 });
             });
-            core.setOutput('jsonFiles', jsonFiles);
-            core.info(`jsonFiles ${jsonFiles}`);
         }
         catch (error) {
             core.setFailed(error);

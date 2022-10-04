@@ -12,6 +12,7 @@ async function run(): Promise<void> {
     core.info(`workspace dir: ${workspace}`)
 
     const files = walk(workspace)
+    // Filters out all files that are not json files and not data files
     const jsonRegex = /(.+)\/(apps|libs)\/(.+)\.(json)/
     const jsonFiles = filter(
       files,
@@ -24,21 +25,19 @@ async function run(): Promise<void> {
         !includes(o, 'package-lock')
     )
 
+    // Go through the json files and JSON.parse each file to make sure thet are valid
     map(jsonFiles, fileName => {
       fs.readFile(fileName, 'utf8', (err, data) => {
         try {
-          const fileData = JSON.parse(data)
-          core.info(`fileData dir: ${JSON.stringify(fileData)}`)
+          JSON.parse(data)
         } catch (e) {
+          // if error print file name a set step to failed
           const result = (e as Error).message
           core.error(`File ${fileName} is invalid: ${result}`)
           core.setFailed(`File ${fileName} is invalid: ${result}`)
         }
       })
     })
-
-    core.setOutput('jsonFiles', jsonFiles)
-    core.info(`jsonFiles ${jsonFiles}`)
   } catch (error: any) {
     core.setFailed(error)
   }
