@@ -1,5 +1,6 @@
 import * as core from '@actions/core'
 import walk from '@chronocide/fs-walk'
+import { filter } from 'lodash'
 
 async function run(): Promise<void> {
   try {
@@ -10,9 +11,11 @@ async function run(): Promise<void> {
     core.info(`workspace dir: ${workspace}`)
 
     const files = walk(workspace)
+    const jsonRegex = /(.+)\/(apps|libs)\/(.+)\.(json)/
+    const jsonFiles = filter(files, o => jsonRegex.test(o))
 
-    core.setOutput('files', files)
-    core.info(`files ${files}`)
+    core.setOutput('jsonFiles', jsonFiles)
+    core.info(`jsonFiles ${jsonFiles}`)
   } catch (error: any) {
     core.setFailed(error)
   }
