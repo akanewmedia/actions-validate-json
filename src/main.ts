@@ -1,6 +1,5 @@
 import * as core from '@actions/core'
 import walk from '@chronocide/fs-walk'
-import path from 'path'
 
 async function run(): Promise<void> {
   try {
@@ -10,7 +9,7 @@ async function run(): Promise<void> {
     const workspace = process.env.GITHUB_WORKSPACE ?? './'
     core.info(`workspace dir: ${workspace}`)
 
-    const files = walk(path.resolve(__dirname))
+    const files = walk(workspace)
 
     core.setOutput('files', files)
     core.info(`files ${files}`)

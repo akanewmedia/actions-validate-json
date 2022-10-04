@@ -44,7 +44,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(186));
 const fs_walk_1 = __importDefault(__nccwpck_require__(833));
-const path_1 = __importDefault(__nccwpck_require__(622));
 function run() {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
@@ -54,7 +53,7 @@ function run() {
             core.info('Initializing');
             const workspace = (_a = process.env.GITHUB_WORKSPACE) !== null && _a !== void 0 ? _a : './';
             core.info(`workspace dir: ${workspace}`);
-            const files = (0, fs_walk_1.default)(path_1.default.resolve(__dirname));
+            const files = (0, fs_walk_1.default)(workspace);
             core.setOutput('files', files);
             core.info(`files ${files}`);
         }
