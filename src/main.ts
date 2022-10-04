@@ -14,7 +14,12 @@ async function run(): Promise<void> {
     const jsonRegex = /(.+)\/(apps|libs)\/(.+)\.(json)/
     const jsonFiles = filter(
       files,
-      o => jsonRegex.test(o) && !includes(o, 'e2e') && !includes(o, 'tsconfig')
+      o =>
+        jsonRegex.test(o) &&
+        !includes(o, 'e2e') &&
+        !includes(o, 'tsconfig') &&
+        !includes(o, 'ng-package') &&
+        !includes(o, 'lint')
     )
 
     core.setOutput('jsonFiles', jsonFiles)
