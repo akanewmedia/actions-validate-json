@@ -1,16 +1,17 @@
 import * as core from '@actions/core'
-import fs, {Dirent} from 'fs'
+import fs, { Dirent } from 'fs'
 import util from 'util'
 import path from 'path'
-import {isNil} from 'lodash'
+import { isNil } from 'lodash'
 
 async function run(): Promise<void> {
   try {
     core.setCommandEcho(true)
     core.setOutput('Initializing', true)
+    const workspace = process.env.GITHUB_WORKSPACE ?? './'
     const readFile = util.promisify(fs.readFile)
     walk(
-      '.',
+      workspace,
       async (err: Error | null, results?: string[]) => {
         if (err !== null) {
           core.setFailed(err)
@@ -46,7 +47,7 @@ export function walk(
   let results: string[] = []
   fs.readdir(
     dir,
-    {withFileTypes: true},
+    { withFileTypes: true },
     (err: Error | null, list: Dirent[]): void => {
       if (err) {
         return done(err)

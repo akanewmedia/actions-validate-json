@@ -49,12 +49,14 @@ const util_1 = __importDefault(__nccwpck_require__(669));
 const path_1 = __importDefault(__nccwpck_require__(622));
 const lodash_1 = __nccwpck_require__(250);
 function run() {
+    var _a;
     return __awaiter(this, void 0, void 0, function* () {
         try {
             core.setCommandEcho(true);
             core.setOutput('Initializing', true);
+            const workspace = (_a = process.env.GITHUB_WORKSPACE) !== null && _a !== void 0 ? _a : './';
             const readFile = util_1.default.promisify(fs_1.default.readFile);
-            walk('.', (err, results) => __awaiter(this, void 0, void 0, function* () {
+            walk(workspace, (err, results) => __awaiter(this, void 0, void 0, function* () {
                 if (err !== null) {
                     core.setFailed(err);
                 }
