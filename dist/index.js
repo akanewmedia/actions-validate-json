@@ -45,6 +45,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(186));
 const fs_walk_1 = __importDefault(__nccwpck_require__(833));
 const lodash_1 = __nccwpck_require__(250);
+const fs = __importStar(__nccwpck_require__(747));
 function run() {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
@@ -62,6 +63,19 @@ function run() {
                 !(0, lodash_1.includes)(o, 'ng-package') &&
                 !(0, lodash_1.includes)(o, 'lint') &&
                 !(0, lodash_1.includes)(o, 'package-lock'));
+            (0, lodash_1.map)(jsonFiles, fileName => {
+                fs.readFile(fileName, 'utf8', (err, data) => {
+                    try {
+                        const fileData = JSON.parse(data);
+                        core.info(`fileData dir: ${JSON.stringify(fileData)}`);
+                    }
+                    catch (e) {
+                        const result = e.message;
+                        core.error(`File ${fileName} is invalid: ${result}`);
+                        core.setFailed(`File ${fileName} is invalid: ${result}`);
+                    }
+                });
+            });
             core.setOutput('jsonFiles', jsonFiles);
             core.info(`jsonFiles ${jsonFiles}`);
         }

@@ -1,6 +1,7 @@
 import * as core from '@actions/core'
 import walk from '@chronocide/fs-walk'
-import { filter, includes } from 'lodash'
+import { filter, includes, map } from 'lodash'
+import * as fs from 'fs'
 
 async function run(): Promise<void> {
   try {
@@ -22,6 +23,19 @@ async function run(): Promise<void> {
         !includes(o, 'lint') &&
         !includes(o, 'package-lock')
     )
+
+    map(jsonFiles, fileName => {
+      fs.readFile(fileName, 'utf8', (err, data) => {
+        try {
+          const fileData = JSON.parse(data)
+          core.info(`fileData dir: ${JSON.stringify(fileData)}`)
+        } catch (e) {
+          const result = (e as Error).message
+          core.error(`File ${fileName} is invalid: ${result}`)
+          core.setFailed(`File ${fileName} is invalid: ${result}`)
+        }
+      })
+    })
 
     core.setOutput('jsonFiles', jsonFiles)
     core.info(`jsonFiles ${jsonFiles}`)
