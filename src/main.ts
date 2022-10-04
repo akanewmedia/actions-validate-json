@@ -19,7 +19,8 @@ async function run(): Promise<void> {
         !includes(o, 'e2e') &&
         !includes(o, 'tsconfig') &&
         !includes(o, 'ng-package') &&
-        !includes(o, 'lint')
+        !includes(o, 'lint') &&
+        !includes(o, 'package-lock')
     )
 
     core.setOutput('jsonFiles', jsonFiles)

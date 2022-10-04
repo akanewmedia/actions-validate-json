@@ -60,7 +60,8 @@ function run() {
                 !(0, lodash_1.includes)(o, 'e2e') &&
                 !(0, lodash_1.includes)(o, 'tsconfig') &&
                 !(0, lodash_1.includes)(o, 'ng-package') &&
-                !(0, lodash_1.includes)(o, 'lint'));
+                !(0, lodash_1.includes)(o, 'lint') &&
+                !(0, lodash_1.includes)(o, 'package-lock'));
             core.setOutput('jsonFiles', jsonFiles);
             core.info(`jsonFiles ${jsonFiles}`);
         }
