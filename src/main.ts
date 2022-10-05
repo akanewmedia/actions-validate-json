@@ -26,21 +26,30 @@ async function run(): Promise<void> {
     )
 
     // Go through the json files and JSON.parse each file to make sure thet are valid
-    map(jsonFiles, fileName => {
-      fs.readFile(fileName, 'utf8', (err, data) => {
-        try {
-          JSON.parse(data)
-        } catch (e) {
-          // if error print file name a set step to failed
-          const result = (e as Error).message
-          core.error(`File ${fileName} is invalid: ${result}`)
-          core.setFailed(`File ${fileName} is invalid: ${result}`)
-        }
-      })
-    })
+    checkFiles({ jsonFiles })
   } catch (error: any) {
     core.setFailed(error)
   }
+}
+
+/**
+ * Iterates throw the files and asttempts to JSON.parse them to check for validity
+ *
+ * @param {{ jsonFiles: string[] }} { jsonFiles } json files to check
+ */
+function checkFiles({ jsonFiles }: { jsonFiles: string[] }): void {
+  map(jsonFiles, fileName => {
+    fs.readFile(fileName, 'utf8', (err, data) => {
+      try {
+        JSON.parse(data)
+      } catch (e) {
+        // if error print file name a set step to failed
+        const result = (e as Error).message
+        core.error(`File ${fileName} is invalid: ${result}`)
+        core.setFailed(`File ${fileName} is invalid: ${result}`)
+      }
+    })
+  })
 }
 
 run()
