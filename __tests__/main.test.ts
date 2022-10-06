@@ -1,28 +1,54 @@
-import * as process from 'process'
-import * as cp from 'child_process'
+import walk from '@chronocide/fs-walk'
 import * as path from 'path'
-import { expect, test } from '@jest/globals'
+import { expect } from '@jest/globals'
+import { filter } from 'lodash'
+import { verifyJsonFiles } from '../src/json-validation'
 
-// test('throws invalid number', async () => {
-//   const input = parseInt('foo', 10)
-//   await expect(wait(input)).rejects.toThrow('milliseconds not a number')
-// })
+let mockCallback = jest.fn()
+describe('@akanewmedia-actions-validate-json', () => {
+  beforeEach(() => {
+    mockCallback = jest.fn()
+    process.stdout.write = mockCallback
+  })
 
-// test('wait 500 ms', async () => {
-//   const start = new Date()
-//   await wait(500)
-//   const end = new Date()
-//   var delta = Math.abs(end.getTime() - start.getTime())
-//   expect(delta).toBeGreaterThan(450)
-// })
+  afterEach(() => {
+    jest.restoreAllMocks()
+  })
 
-// shows how the runner will run a javascript action with env / stdout protocol
-test('test runs', () => {
-  process.env['INPUT_MILLISECONDS'] = '500'
-  const np = process.execPath
-  const ip = path.join(__dirname, '..', 'lib', 'main.js')
-  const options: cp.ExecFileSyncOptions = {
-    env: process.env
-  }
-  console.log(cp.execFileSync(np, [ip], options).toString())
+  it('check json files with failure', () => {
+    const workspace = path.join(__dirname, 'fixtures')
+    const files = walk(workspace)
+    // Filters out all files that are not json files and not data files
+    const jsonRegex = /(.+)\/(.+)\.(json)/
+    const jsonFiles = filter(files, o => jsonRegex.test(o))
+    verifyJsonFiles(jsonFiles)
+
+    assertWriteCalls(mockCallback.mock.calls, [
+      '::error::File /Users/damien/projects/aka/actions/actions-validate-json/__tests__/fixtures/a/b/c/bad.json'
+    ])
+  })
+
+  it('check json files with success', () => {
+    const workspace = path.join(__dirname, 'fixtures')
+    const files = walk(workspace)
+
+    // Filters out all files that are not json files and not data files
+    const jsonRegex = /(.+)\/(.+)\.(json)/
+    const jsonFiles = filter(
+      files,
+      o => jsonRegex.test(o) && o.includes('good')
+    )
+
+    verifyJsonFiles(jsonFiles)
+    assertWriteCalls(mockCallback.mock.calls, [])
+  })
 })
+
+// Assert that process.stdout.write calls called only with the given arguments.
+function assertWriteCalls(writeCalls: any[], calls: string[]): void {
+  expect(process.stdout.write).toHaveBeenCalledTimes(calls.length)
+
+  for (let i = 0; i < calls.length; i++) {
+    expect(writeCalls[i][0]).toContain(calls[i])
+  }
+}
